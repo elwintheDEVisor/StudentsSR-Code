@@ -11,7 +11,7 @@ public:
     string schedule;
 };
 
-class Node{
+class Node {
 public:
     string details1;
     string details2;
@@ -21,12 +21,12 @@ public:
     Node* next;
 };
 
-Node *head = NULL;
+Node* head = NULL;
 
-void AddNode(string details1, string details2, string details3, string details4, string details5){
-Node *n, *curr;
+void AddNode(string details1, string details2, string details3, string details4, string details5) {
+    Node* n, * curr;
 
-n = new Node();
+    n = new Node();
     n->details1 = details1;
     n->details2 = details2;
     n->details3 = details3;
@@ -34,27 +34,90 @@ n = new Node();
     n->details5 = details5;
     n->next = NULL;
 
-    if(head==NULL)
-    head=n;
-    else{
+    if (head == NULL)
+        head = n;
+    else {
         curr = head;
         head = n;
-        head -> next = curr;
+        head->next = curr;
     }
-
 }
 
-void displayList(void){
-        Node *curr;
-        curr = head;
-        while (curr!=NULL)
-        {
+void displayList(void) {
+    Node* curr;
+    curr = head;
+    while (curr != NULL) {
         cout << "SR-CODE: " << curr->details1 << "\t" << "Students Name: " << curr->details2 << endl;
         curr = curr->next;
-        }
+    }
+}
 
+bool askToAddAnotherStudent() {
+    cout << "\nDo you want to add another student? (Y/N): ";
+    char choice;
+    cin >> choice;
+
+    while (cin.fail() || (choice != 'Y' && choice != 'y' && choice != 'N' && choice != 'n')) {
+        cout << "Invalid input. Please enter 'Y' or 'N': ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin >> choice;
     }
 
+    return (choice == 'Y' || choice == 'y');
+}
+
+void deleteNode(string inputSRCODE) {
+    Node* curr = head;
+    Node* prev = NULL;
+
+    while (curr != NULL) {
+        if (curr->details1 == inputSRCODE) {
+            if (prev == NULL) {
+                head = curr->next;
+            } else {
+                prev->next = curr->next;
+            }
+
+            delete curr;
+            cout << "Student with SRCODE " << inputSRCODE << " has been deleted." << endl;
+            return;
+        }
+
+        prev = curr;
+        curr = curr->next;
+    }
+
+    cout << "The student with SRCODE " << inputSRCODE << " does not exist." << endl;
+}
+
+void searchNode(string inputSRCODE) {
+    Node* curr = head;
+
+    while (curr != NULL) {
+        if (curr->details1 == inputSRCODE) {
+            cout << "SR-CODE: " << curr->details1 << "\t" << "Students Name: " << curr->details2 << endl;
+            cout << "Subjects: " << curr->details3;
+            cout << "\t\t\tProfessor: " << curr->details4;
+            cout << "\t\t\tSchedule: " << curr->details5;
+            return;
+        }
+
+        curr = curr->next;
+    }
+
+    cout << "The student with SRCODE " << inputSRCODE << " does not exist." << endl;
+}
+
+void displayMenu() {
+    cout << "\nMain Menu:" << endl;
+    cout << "1. View Existing Details" << endl;
+    cout << "2. Delete Existing Details" << endl;
+    cout << "3. Add Another Student Details" << endl;
+    cout << "4. Search Student Details" << endl;
+    cout << "5. Quit" << endl;
+    cout << "Enter your choice: ";
+}
 
 int main() {
     int numStudents;
@@ -68,73 +131,111 @@ int main() {
     cin >> numStudents;
 
     Student* students = new Student[numStudents];
-    int temp;
 
-    do {
+    for (int i = 0; i < numStudents; i++) {
         system("CLS");
-        for (int i = 0; i < numStudents; i++) {
-            cout << "Enter Details of Student No. " << i + 1 << endl;
-            cout << "Enter SRCODE of Student No. " << i + 1 << ": ";
-            cin >> students[i].SRCODE;
-            cout << "Enter Name of Student No. " << i + 1 << ": ";
-            cin >> students[i].name;
-            cout << "Enter Subjects of Student No. " << i + 1 << ": ";
-            cin >> students[i].Subjects;
-            cout << "Enter Prof of Student No. " << i + 1 << ": ";
-            cin >> students[i].Prof;
-            cout << "Enter Schedule of Student No. " << i + 1 << ": ";
-            cin >> students[i].schedule;
-            cout << endl;
-            system("CLS");
+        cout << "Enter Details of Student No. " << i + 1 << " of " << numStudents << endl;
+        cout << "Enter SRCODE of Student No. " << i + 1 << ": ";
+        cin >> students[i].SRCODE;
+        cout << "Enter Name of Student No. " << i + 1 << ": ";
+        cin >> students[i].name;
+        cout << "Enter Subjects of Student No. " << i + 1 << ": ";
+        cin >> students[i].Subjects;
+        cout << "Enter Prof of Student No. " << i + 1 << ": ";
+        cin >> students[i].Prof;
+        cout << "Enter Schedule of Student No. " << i + 1 << ": ";
+        cin >> students[i].schedule;
+        cout << endl;
 
-            details1 = students[i].SRCODE;
-            details2 = students[i].name;
-            details3 = students[i].Subjects;
-            details4 = students[i].Prof;
-            details5 = students[i].schedule;
-            AddNode(details1, details2, details3, details4, details5);
+        details1 = students[i].SRCODE;
+        details2 = students[i].name;
+        details3 = students[i].Subjects;
+        details4 = students[i].Prof;
+        details5 = students[i].schedule;
+        AddNode(details1, details2, details3, details4, details5);
+    }
+
+    displayList();
+
+    int choice;
+    string inputSRCODE;
+    do {
+        displayMenu();
+        while (!(cin >> choice )){
+            cout << "Invalid Input. Please Enter a number: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
 
-        displayList();
-
-        string inputSRCODE;
-        do {
-            cout << "\nEnter the SRCODE to display the details: ";
-            cin >> inputSRCODE;
-
-            temp = 0;
-            for (int i = 0; i < numStudents; i++) {
-                if (inputSRCODE == students[i].SRCODE) {
-                    cout << "\nStudents Name: " << students[i].name;
-                    cout << "\n\nDetails of Student No. " << i + 1 << ": ";
-                    cout << "\n\nSubject: " << students[i].Subjects;
-                    cout << "\t\t\tProf: " << students[i].Prof;
-                    cout << "\t\t\tSchedule: " << students[i].schedule;
-                    temp = 1;
-                    break;
-                }
-            }
-
-            if (temp == 0)
-                cout << "\nThe student identified by the given SRCODE does not exist." << endl;
-
-            cout << "\n\nDo you want to continue searching? (Y/N): ";
-            char choice;
-            cin >> choice;
-
-            while (cin.fail() || (choice != 'Y' && choice != 'y' && choice != 'N' && choice != 'n')) {
-                cout << "Invalid input. Please enter 'Y' or 'N': ";
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cin >> choice;
-            }
-
-            if (choice != 'Y' && choice != 'y')
+        switch (choice) {
+            case 1:
+                displayList();
                 break;
-        } while (true);
 
-        break;
-    } while (true);
+            case 2:
+                cout << "\nEnter the SRCODE to delete the student details (or 'q' to quit): ";
+                cin >> inputSRCODE;
+
+                if (inputSRCODE == "q" || inputSRCODE == "Q")
+                    break;
+
+                deleteNode(inputSRCODE);
+                break;
+
+            case 3:
+                if (!askToAddAnotherStudent())
+                    break;
+
+                Student* resizedStudents;
+                resizedStudents = new Student[numStudents + 1];
+                for (int i = 0; i < numStudents; i++) {
+                    resizedStudents[i] = students[i];
+                }
+
+                delete[] students;
+                students = resizedStudents;
+
+                cout << "Enter Details of Student No. " << numStudents + 1 << endl;
+                cout << "Enter SRCODE of Student No. " << numStudents + 1 << ": ";
+                cin >> students[numStudents].SRCODE;
+                cout << "Enter Name of Student No. " << numStudents + 1 << ": ";
+                cin >> students[numStudents].name;
+                cout << "Enter Subjects of Student No. " << numStudents + 1 << ": ";
+                cin >> students[numStudents].Subjects;
+                cout << "Enter Prof of Student No. " << numStudents + 1 << ": ";
+                cin >> students[numStudents].Prof;
+                cout << "Enter Schedule of Student No. " << numStudents + 1 << ": ";
+                cin >> students[numStudents].schedule;
+                cout << endl;
+
+                details1 = students[numStudents].SRCODE;
+                details2 = students[numStudents].name;
+                details3 = students[numStudents].Subjects;
+                details4 = students[numStudents].Prof;
+                details5 = students[numStudents].schedule;
+                AddNode(details1, details2, details3, details4, details5);
+
+                numStudents++;
+                break;
+
+            case 4:
+                cout << "\nEnter the SRCODE to search for student details (or 'q' to quit): ";
+                cin >> inputSRCODE;
+
+                if (inputSRCODE == "q" || inputSRCODE == "Q")
+                    break;
+
+                searchNode(inputSRCODE);
+                break;
+
+            case 5:
+                cout << "Quitting the program..." << endl;
+                break;
+
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 5);
 
     delete[] students;
 
